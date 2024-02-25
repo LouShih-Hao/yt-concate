@@ -19,7 +19,6 @@ class GetVideoList(Step):
 
         first_url = base_search_url + 'key={}&channelId={}&part=snippet,id&order=date&maxResults=25'.format(api_key,
                                                                                                             channel_id)
-
         video_links = []
         url = first_url
 
@@ -36,6 +35,7 @@ class GetVideoList(Step):
                 url = first_url + '&pageToken={}'.format(next_page_token)
             except KeyError:
                 break
+
         print(video_links)
         self.write_to_file(video_links, utils.get_video_list_filepath(channel_id))
         return video_links

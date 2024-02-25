@@ -1,17 +1,17 @@
 import os
-import yt_dlp
-from webvtt import WebVTT
-from .step import Step
-
 import time
+import yt_dlp
+
+from webvtt import WebVTT
+
+from .step import Step
 
 
 class DownloadCaptions(Step):
     def process(self, data, inputs, utils):
         start = time.time()
         for url in data:
-            print('Downloading caption for', url)
-            if utils.caption_file_exists(utils.get_caption_filepath(url)):
+            if utils.caption_file_exists(url + '.txt'):
                 print('Caption file exists')
                 continue
             ydl_opts = {
