@@ -22,7 +22,6 @@ class DownloadCaptions(Step):
                 'writeautomaticsub': True,
                 'subtitleslangs': ['en'],
                 'outtmpl': yt.caption_filepath,
-                'progress_hooks': [lambda d: None],  # 設定空函數以跳過下載進度信息
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:

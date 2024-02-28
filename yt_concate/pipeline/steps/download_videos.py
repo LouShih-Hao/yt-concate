@@ -15,9 +15,7 @@ class DownloadVideos(Step):
                 continue
 
             ydl_opts = {
-                # 'format': 'bestvideo+bestaudio/best',
                 'outtmpl': yt.video_filepath,
-                'progress_hooks': [lambda d: None],  # 設定空函數以跳過下載進度信息
             }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
