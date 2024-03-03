@@ -2,6 +2,7 @@ import os
 import time
 import yt_dlp
 from threading import Thread
+from webvtt import WebVTT
 
 from .step import Step
 
@@ -11,16 +12,19 @@ class DownloadCaptions(Step):
         start = time.time()
         caption_list = []
         for yt in data:
-            if utils.caption_file_exists(yt):
+            if utils.caption_file_exists(yt) and inputs['fast']:
                 print(f'Caption file exists for {yt.url}, skipping')
                 continue
             else:
                 caption_list.append(yt)
 
         threads = []
+        threads_num = os.cpu_count()
 
-        for i in range(os.cpu_count()):
-            threads.append(Thread(target=self.download_caption, args=(caption_list, i)))
+        divide_c_list = [caption_list[i:len(caption_list):threads_num]for i in range(0, threads_num)]
+
+        for i in range(threads_num):
+            threads.append(Thread(target=self.download_caption, args=(divide_c_list[i], )))
             threads[i].start()
 
         for i in range(os.cpu_count()):
@@ -29,22 +33,37 @@ class DownloadCaptions(Step):
         end = time.time()
         print('took', end - start, 'seconds')
 
+        data = caption_list
+
         return data
 
     @staticmethod
-    def download_caption(caption_list, thread_id):
-        for yt in caption_list[thread_id::os.cpu_count()]:
-            url = yt.url
+    def download_caption(c_list):
+        for c_yt in c_list:
+            url = c_yt.url
             ydl_opts = {
                 'skip_download': True,
                 'writesubtitles': True,
                 'writeautomaticsub': True,
                 'subtitleslangs': ['en'],
-                'outtmpl': yt.caption_filepath,
+                'outtmpl': c_yt.caption_filepath,
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:
-                    print('Downloading caption for', yt.id)
+                    print('Downloading caption for', c_yt.id)
                     ydl.download([url])
                 except yt_dlp.DownloadError as e:
                     print(f"Error downloading subtitles: {e}")
+
+            vtt_file_path = c_yt.caption_filepath + '.en.vtt'
+            srt_file_path = c_yt.caption_filepath
+
+            # 轉換 VTT 到 SRT
+            if os.path.exists(vtt_file_path):
+                vtt = WebVTT().read(vtt_file_path)
+                with open(srt_file_path, 'w', encoding='utf-8') as srt_file:
+                    for caption in vtt:
+                        srt_file.write(f"{caption.start} --> {caption.end}\n{caption.text}\n")
+                os.remove(vtt_file_path)  # 刪除原始的 VTT 檔案
+            else:
+                print(f"VTT file not found at {vtt_file_path}")

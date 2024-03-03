@@ -12,16 +12,19 @@ class DownloadVideos(Step):
         video_list = []
 
         for yt in yt_set:
-            if utils.video_file_exists(yt):
+            if utils.video_file_exists(yt) and inputs['fast']:
                 print(f'Video file exists for {yt.url}, skipping')
                 continue
             else:
                 video_list.append(yt)
 
         threads = []
+        threads_num = os.cpu_count()
+
+        divide_v_list = [video_list[i:len(video_list):threads_num] for i in range(0, threads_num)]
 
         for i in range(os.cpu_count()):
-            threads.append(Thread(target=self.download_video, args=(video_list, i)))
+            threads.append(Thread(target=self.download_video, args=(divide_v_list[i], )))
             threads[i].start()
 
         for i in range(os.cpu_count()):
@@ -30,8 +33,8 @@ class DownloadVideos(Step):
         return data
 
     @staticmethod
-    def download_video(video_list, thread_id):
-        for yt in video_list[thread_id::os.cpu_count()]:
+    def download_video(v_list):
+        for yt in v_list:
             url = yt.url
             ydl_opts = {
                 'outtmpl': yt.video_filepath,

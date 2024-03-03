@@ -40,3 +40,30 @@ class Utils:
     def get_output_filepath(channel_id, search_word):
         filename = channel_id + '_' + search_word + '.mp4'
         return os.path.join(OUTPUTS_DIR, filename)
+
+    @staticmethod
+    def delete_files_in_directory(directory):
+        try:
+            # 確保目錄存在
+            if os.path.exists(directory):
+                # 遍歷目錄中的所有文件
+                for file_name in os.listdir(directory):
+                    file_path = os.path.join(directory, file_name)
+
+                    # 檢查文件是否存在並且是否是文件（不是子目錄）
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                        print(f"文件 '{file_path}' 已成功刪除。")
+                    else:
+                        print(f"跳過目錄 '{file_path}'。")
+
+                print(f"目錄 '{directory}' 下的所有文件已成功刪除。")
+            else:
+                print(f"目錄 '{directory}' 不存在。")
+        except Exception as e:
+            print(f"刪除目錄 '{directory}' 下的文件時發生錯誤: {e}")
+
+    def delete_dirs(self):
+        self.delete_files_in_directory(CAPTIONS_DIR)
+        self.delete_files_in_directory(VIDEOS_DIR)
+        self.delete_files_in_directory(DOWNLOADS_DIR)
