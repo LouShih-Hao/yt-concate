@@ -1,4 +1,5 @@
 from yt_concate.pipeline.steps.step import StepException
+from yt_concate.yt_logging import generate_logger
 
 
 class Pipeline:
@@ -6,10 +7,11 @@ class Pipeline:
         self.steps = steps
 
     def run(self, inputs, utils):
+        logger = generate_logger()
         data = None
         for step in self.steps:
             try:
                 data = step.process(data, inputs, utils)
             except StepException as e:
-                print('Exception happened:', e)
+                logger.error('Exception happened:', e)
                 break

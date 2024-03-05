@@ -5,6 +5,7 @@ from yt_concate.settings import DOWNLOADS_DIR
 from yt_concate.settings import VIDEOS_DIR
 from yt_concate.settings import CAPTIONS_DIR
 from yt_concate.settings import OUTPUTS_DIR
+from yt_concate.yt_logging import generate_logger
 
 
 class Utils:
@@ -43,6 +44,7 @@ class Utils:
 
     @staticmethod
     def delete_files_in_directory(directory):
+        logger = generate_logger()
         try:
             # 確保目錄存在
             if os.path.exists(directory):
@@ -53,15 +55,15 @@ class Utils:
                     # 檢查文件是否存在並且是否是文件（不是子目錄）
                     if os.path.isfile(file_path):
                         os.remove(file_path)
-                        print(f"文件 '{file_path}' 已成功刪除。")
+                        logger.info(f"文件 '{file_path}' 已成功刪除。")
                     else:
-                        print(f"跳過目錄 '{file_path}'。")
+                        logger.info(f"跳過目錄 '{file_path}'。")
 
-                print(f"目錄 '{directory}' 下的所有文件已成功刪除。")
+                logger.info(f"目錄 '{directory}' 下的所有文件已成功刪除。")
             else:
-                print(f"目錄 '{directory}' 不存在。")
+                logger.info(f"目錄 '{directory}' 不存在。")
         except Exception as e:
-            print(f"刪除目錄 '{directory}' 下的文件時發生錯誤: {e}")
+            logger.error(f"刪除目錄 '{directory}' 下的文件時發生錯誤: {e}")
 
     def delete_dirs(self):
         self.delete_files_in_directory(CAPTIONS_DIR)

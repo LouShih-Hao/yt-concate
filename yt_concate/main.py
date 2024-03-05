@@ -1,6 +1,7 @@
 import sys
 import getopt
-sys.path.append('../') # CMD 讀不到 yt_concate
+import logging
+# sys.path.append('../') # CMD 讀不到 yt_concate
 from yt_concate.pipeline.steps.preflight import Preflight
 from yt_concate.pipeline.steps.get_video_list import GetVideoList
 from yt_concate.pipeline.steps.initialize_yt import InitializeYT
@@ -12,6 +13,7 @@ from yt_concate.pipeline.steps.edit_video import EditVideo
 from yt_concate.pipeline.steps.postflight import Postflight
 from yt_concate.pipeline.pipeline import Pipeline
 from yt_concate.utils import Utils
+from yt_logging import config_logger
 
 CHANNEL_ID = 'UCKSVUHI9rbbkXhvAXK-2uxA'
 
@@ -30,12 +32,14 @@ def opt_print(argv):
 
 def main(argv):
     opt_argv = argv[1:]
+    logging_levels = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
     inputs = {
         'channel_id': CHANNEL_ID,
         'search_word': 'incredible',
         'limit': 20,
         'cleanup': False,
         'fast': True,
+        'level': logging.WARNING,
     }
 
     short_opts = 'hc:s:l:f:'
@@ -45,6 +49,7 @@ def main(argv):
         'limit=',
         'cleanup=',
         'fast=',
+        'level=',
     ]
 
     try:
@@ -59,6 +64,10 @@ def main(argv):
                 sys.exit(0)
             elif opt == '--cleanup':
                 inputs['cleanup'] = bool(arg)
+            elif opt == '--level':
+                if arg not in logging_levels:
+                    continue
+                inputs['level'] = f'logging.{arg}'
             elif opt in ('-c', '--channel'):
                 inputs['channel_id'] = arg
             elif opt in ('-s', '--search'):
@@ -84,6 +93,7 @@ def main(argv):
 
     utils = Utils()
     p = Pipeline(steps)
+    config_logger(inputs['level'])
     p.run(inputs, utils)
 
 
