@@ -14,7 +14,7 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = 'yt-concate-Hao'
 DESCRIPTION = 'Produce a concatenated video of clips that mentioned a word from Youtube channel.'
-URL = 'https://github.com/LouShih-Hao/yt-concate'
+URL = 'https://github.com/LouShih-Hao/yt-concate-hao'
 EMAIL = 'shihhao.lou@gmail.com'
 AUTHOR = 'Shih-Hao,Lou'
 REQUIRES_PYTHON = '>=3.12.0'
