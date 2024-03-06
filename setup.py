@@ -18,7 +18,7 @@ URL = 'https://github.com/LouShih-Hao/yt-concate-hao'
 EMAIL = 'shihhao.lou@gmail.com'
 AUTHOR = 'Shih-Hao,Lou'
 REQUIRES_PYTHON = '>=3.12.0'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
